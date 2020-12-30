@@ -35,7 +35,7 @@ function encodeString(s,d) {
         data[offset++]=(len >> 8) & 0xff;
         data[offset++]=len & 0xff;
     }
-    data.utf8Write(s,offset);
+    data.utf8Write(s,offset); // utf8 转为 buffer
     d&&console.log("Writing ",data);
     return data;
 }
@@ -47,7 +47,7 @@ function decodePacket(data){
     while (idx<data.length) {
         let len;
         let b=data[idx++];
-        if (b&128) { // Ported from the PHP API on the Wiki. Thanks
+        if (b&128) { // Ported from the PHP API on the Wiki. Thanks 移植
             if ((b&192)==128) {
                 len=((b&63)<<8)+data[idx++];
             } else {
@@ -71,7 +71,7 @@ function decodePacket(data){
             len=b;
         } 
         // console.log("Pushing ",idx,len,data.slice(idx,idx+len));
-        buf.push(data.slice(idx,idx+len).toString('utf8'));
+        buf.push(data.slice(idx,idx+len).toString('utf8')); // buffer 转为 utf-8（非有效utf8编码会被替换为 U+FFFD，丢失信息）
         idx+=len;
     }
     return buf;
